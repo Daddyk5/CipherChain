@@ -1,0 +1,16 @@
+{
+  "name": "@cipherchain/blockchain",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:amoy": "hardhat run scripts/deploy.js --network polygonAmoy"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "hardhat": "^2.28.0"
+  }
+}

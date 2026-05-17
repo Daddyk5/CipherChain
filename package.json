@@ -1,0 +1,23 @@
+{
+  "name": "cipherchain-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CipherChain monorepo for encrypted Web3 messaging.",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "blockchain"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace frontend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run dev --workspace backend",
+    "build": "npm run build --workspace frontend",
+    "lint": "npm run lint --workspace frontend",
+    "test:blockchain": "npm run test --workspace blockchain",
+    "compile:contracts": "npm run compile --workspace blockchain"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
