@@ -5,10 +5,10 @@ import { StatCard } from '../../components/ui/StatCard.jsx'
 import { StatusPill } from '../../components/ui/StatusPill.jsx'
 import { WalletConnectButton } from '../../components/wallet/WalletConnectButton.jsx'
 import { apiRequest } from '../../services/api/httpClient.js'
-import { useWalletStore } from '../../store/walletStore.js'
+import { useAuthStore } from '../../store/authStore.js'
 
 export function AdminPage() {
-  const { account } = useWalletStore()
+  const account = useAuthStore((state) => state.admin?.walletAddress)
   const [status, setStatus] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -18,11 +18,7 @@ export function AdminPage() {
     setError(null)
 
     try {
-      const result = await apiRequest('/admin/status', {
-        headers: {
-          'x-wallet-address': account,
-        },
-      })
+      const result = await apiRequest('/admin/status')
 
       setStatus(result)
     } catch (requestError) {
@@ -51,9 +47,9 @@ export function AdminPage() {
       <div className="glass-panel max-w-3xl rounded-xl p-6">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h3 className="text-lg font-semibold text-white">Admin SDK status</h3>
+            <h3 className="text-lg font-semibold text-white">Backend status</h3>
             <p className="mt-1 text-sm text-slate-500">
-              The service account stays on the backend and is never exposed to the browser.
+              Database credentials stay on the backend and are never exposed to the browser.
             </p>
           </div>
           <Button onClick={loadAdminStatus} disabled={!account || isLoading}>
@@ -63,7 +59,7 @@ export function AdminPage() {
 
         {!account && (
           <p className="mt-5 rounded-lg border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
-            Connect an admin wallet before checking Firebase Admin status.
+            Sign in with an admin wallet before checking backend status.
           </p>
         )}
 
@@ -76,12 +72,12 @@ export function AdminPage() {
         {status && (
           <dl className="mt-6 grid gap-3 text-sm md:grid-cols-3">
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
-              <dt className="text-slate-500">Initialized</dt>
-              <dd className="mt-2 font-semibold text-blue-200">{String(status.firebaseAdminInitialized)}</dd>
+              <dt className="text-slate-500">Database</dt>
+              <dd className="mt-2 font-semibold text-blue-200">{status.database}</dd>
             </div>
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
-              <dt className="text-slate-500">Project</dt>
-              <dd className="mt-2 truncate font-semibold text-white">{status.projectId}</dd>
+              <dt className="text-slate-500">Users / schema</dt>
+              <dd className="mt-2 truncate font-semibold text-white">{status.users} · {status.schema}</dd>
             </div>
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
               <dt className="text-slate-500">Service</dt>

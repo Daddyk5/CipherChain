@@ -1,7 +1,12 @@
 import { Router } from 'express'
-import { getAdminStatus } from '../controllers/adminController.js'
+import { createAdminController } from '../controllers/adminController.js'
 import { requireAdmin } from '../middleware/requireAdmin.js'
 
-export const adminRouter = Router()
+export function createAdminRouter({ db, requireUser }) {
+  const adminRouter = Router()
+  const controller = createAdminController({ db })
 
-adminRouter.get('/status', requireAdmin, getAdminStatus)
+  adminRouter.get('/status', requireUser, requireAdmin, controller.getAdminStatus)
+
+  return adminRouter
+}

@@ -5,14 +5,14 @@
 - Monorepo architecture.
 - React PWA shell.
 - Dark responsive UI system.
-- Firebase project setup.
+- Postgres (Aiven) setup and migrations. ✅
 - Hardhat contract compile and test.
 
 ## Phase 1: Identity
 
 - MetaMask connect.
 - Wallet nonce signing.
-- Firebase custom token auth.
+- SIWE wallet sign-in with opaque server sessions. ✅
 - User profile and display name.
 - Device public key registration.
 
@@ -21,7 +21,7 @@
 - Conversation creation.
 - Web Crypto key agreement.
 - AES-GCM encrypted send and receive.
-- Firestore realtime listeners.
+- Authenticated Socket.io push + inbox pull. ✅
 - Message timestamps and delivery state.
 - Online/offline presence.
 

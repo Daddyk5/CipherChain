@@ -8,7 +8,7 @@ Use short-lived branches from `main`:
 feature/wallet-auth
 feature/direct-message-e2ee
 feature/polygon-verifier
-fix/firestore-presence-rules
+fix/presence-cleanup
 chore/ci
 ```
 
@@ -39,11 +39,11 @@ chore/ci
 - Hardhat compile and tests.
 - Dependency audit.
 - Solidity static analysis.
-- Firestore rules tests once rules are added.
+- Backend API authorization tests (PGlite in-process Postgres).
 
 ## Environment Strategy
 
-- `local`: Emulator-friendly local Firebase and test wallet.
+- `local`: Local backend with a dev Postgres (or Aiven dev service) and a test wallet.
 - `preview`: Per-branch frontend preview and testnet contracts.
-- `staging`: Stable Firebase staging project and Polygon Amoy.
-- `production`: Main environment with locked Firebase rules, monitoring, backups, and deploy approvals.
+- `staging`: Staging Postgres service and Polygon Amoy.
+- `production`: Main environment with least-privilege DB role, monitoring, backups, and deploy approvals.

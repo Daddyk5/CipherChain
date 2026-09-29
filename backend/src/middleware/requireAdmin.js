@@ -1,9 +1,7 @@
-import { env } from '../config/env.js'
-
+// Must run after requireUser. Admin status comes from the verified session
+// (allow-list checked server-side). Client-supplied headers are never trusted for it.
 export function requireAdmin(request, response, next) {
-  const walletAddress = request.header('x-wallet-address')?.toLowerCase()
-
-  if (!walletAddress || !env.ADMIN_WALLET_ADDRESSES.includes(walletAddress)) {
+  if (!request.user?.isAdmin) {
     return response.status(403).json({ message: 'Admin wallet is required.' })
   }
 

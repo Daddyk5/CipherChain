@@ -1,5 +1,5 @@
 export function MessageBubble({ message }) {
-  const own = message.sender === 'You'
+  const own = message.own ?? message.sender === 'You'
 
   return (
     <article className={`flex ${own ? 'justify-end' : 'justify-start'}`}>
@@ -8,19 +8,10 @@ export function MessageBubble({ message }) {
           <span>{message.sender}</span>
           <time>{message.timestamp}</time>
         </div>
-        <p className="text-sm leading-6 text-slate-200">{message.body}</p>
-        {message.file && (
-          <div className="mt-3 rounded-2xl border border-slate-700 bg-slate-950/70 p-3 text-sm text-slate-300">
-            <p className="font-medium text-white">{message.file}</p>
-            <p className="mt-1 text-xs text-slate-500">Encrypted preview, ready to decrypt locally</p>
-          </div>
-        )}
+        <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-slate-200">{message.body}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-full bg-emerald-300/10 px-2 py-1 text-emerald-200">Locked</span>
-          <span className="rounded-full bg-blue-300/10 px-2 py-1 text-blue-200">Delivered</span>
-          <span className="rounded-full bg-orange-300/10 px-2 py-1 text-orange-200">Chain verified</span>
+          <span className="rounded-full bg-emerald-300/10 px-2 py-1 text-emerald-200">End-to-end encrypted</span>
         </div>
-        <p className="mt-2 truncate font-mono text-xs text-blue-300/70">Hash: {message.hash}</p>
       </div>
     </article>
   )

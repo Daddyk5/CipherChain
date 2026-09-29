@@ -4,11 +4,11 @@
 
 CipherChain separates product concerns into three deployable domains:
 
-- `frontend`: React PWA that owns UI, routing, local state, client encryption, Firebase realtime subscriptions, and wallet interaction.
+- `frontend`: React PWA that owns UI, routing, local state, client encryption, authenticated Socket.io subscriptions, and wallet interaction.
 - `backend`: API and socket layer for wallet authentication, profile administration, verification relays, presence fanout, rate limiting, and future media/video workflows.
 - `blockchain`: Solidity contracts and Hardhat tooling for immutable message hash verification on Polygon testnet.
 
-The frontend never imports blockchain build scripts or backend internals. It talks to Firebase for realtime encrypted data, to the backend for trusted server workflows, and to Polygon contracts through a small Ethers.js service boundary.
+The frontend never imports blockchain build scripts or backend internals. It talks to the backend API and Socket.io for realtime encrypted data, to the backend for trusted server workflows, and to Polygon contracts through a small Ethers.js service boundary.
 
 ## Complete Folder Structure
 
@@ -41,7 +41,8 @@ cipherchain/
 │   │   ├── services/
 │   │   │   ├── api/
 │   │   │   ├── blockchain/
-│   │   │   └── firebase/
+│   │   │   ├── auth/
+│   │   │   └── messaging/
 │   │   ├── store/
 │   │   ├── styles/
 │   │   └── utils/
@@ -79,9 +80,9 @@ cipherchain/
 - `components`: Reusable UI split by domain. `ui` stays generic, while `chat`, `wallet`, and `layout` are product-specific.
 - `pages`: Route-level screens with orchestration logic only. Pages compose components, hooks, and stores.
 - `routes`: React Router definitions, guards, redirects, and lazy-loading strategy.
-- `hooks`: Browser, Firebase, wallet, presence, and responsive behavior hooks.
+- `hooks`: Browser, wallet, presence, and responsive behavior hooks.
 - `crypto`: Web Crypto API wrappers for key generation, message encryption, decryption, hashing, export/import, and future group key rotation.
-- `services`: Side-effect boundaries for Firebase, backend API calls, and Ethers.js contract operations.
+- `services`: Side-effect boundaries for backend API calls, secure messaging, and Ethers.js contract operations.
 - `store`: Zustand slices for wallet, auth session, chat, presence, settings, notifications, and UI preferences.
 - `layouts`: Authenticated app shell, guest layout, mobile shell, and future call layout.
 - `context`: Narrow providers for auth/session and feature flags when Zustand is not the right shape.
@@ -95,7 +96,7 @@ cipherchain/
 - `routes`: Versioned route declarations.
 - `middleware`: Auth, validation, rate limits, request IDs, logging, and error handling.
 - `models`: Data contracts and schema shapes for users, conversations, devices, and encrypted messages.
-- `services`: Firebase Admin, Ethers relayers, notification delivery, media scanning metadata, and audit logging.
+- `services`: Ethers relayers, notification delivery, media scanning metadata, and audit logging.
 - `sockets`: Presence, typing indicators, call signaling, and future low-latency coordination.
 - `utils`: Pure helpers and invariant checks.
 
@@ -131,7 +132,7 @@ Use a route-first shell:
 - Services perform external I/O.
 - Crypto modules stay deterministic and isolated.
 
-Avoid importing Firebase, Ethers, or Web Crypto directly inside visual components except for wallet-specific UI. This keeps the frontend testable and prepares the codebase for React Native.
+Avoid importing Ethers, libsignal, or Web Crypto directly inside visual components except for wallet-specific UI. This keeps the frontend testable and prepares the codebase for React Native.
 
 ## Reusable Component Strategy
 
@@ -142,23 +143,20 @@ Avoid importing Firebase, Ethers, or Web Crypto directly inside visual component
 
 UI should be mobile-first, dark, compact, and operational. Use glass panels sparingly for high-value surfaces, not every nested element.
 
-## Firebase Realtime Architecture
+## Data and Realtime Architecture
 
-Recommended collections:
+Postgres (Aiven) is the only server-side store. Migrations live in `backend/src/db/migrations/`.
 
 ```text
-users/{walletAddress}
-users/{walletAddress}/devices/{deviceId}
-conversations/{conversationId}
-conversations/{conversationId}/members/{walletAddress}
-conversations/{conversationId}/messages/{messageId}
-presence/{walletAddress}
-verificationQueue/{messageHash}
+users                 wallet identity + display profile
+auth_nonces           single-use SIWE challenges
+sessions              SHA-256 of opaque session tokens
+devices               per-device Signal identity key (wallet-signed), signed prekey
+one_time_prekeys      consumed once per session setup
+message_envelopes     ciphertext per recipient device, deleted on ack
 ```
 
-Messages store ciphertext, IV, sender wallet, sender device ID, recipient key metadata, hash, signature, delivery state, and timestamps. Never store plaintext in Firebase.
-
-Use Firestore listeners for conversation and message updates. Use backend or Cloud Functions for presence cleanup, notification fanout, moderation metadata, and verification queue workers.
+Clients pull queued ciphertext from `/api/messages/inbox` and receive `message:new` push events over an authenticated Socket.io connection. Decryption, session state, and message history live only on the device (IndexedDB). See [E2E design](../security/E2E_DESIGN.md).
 
 ## Smart Contract Integration
 
@@ -170,7 +168,7 @@ Frontend reads verification state through Ethers.js. Backend may act as a relaye
 
 Recommended slices:
 
-- `authStore`: Firebase user, wallet session, nonce status.
+- `authStore`: wallet session (opaque token), admin flag, sign-in errors.
 - `walletStore`: account, chain ID, provider status, chain switching.
 - `chatStore`: active conversation, messages, drafts, optimistic sends.
 - `presenceStore`: online/offline status, typing state, last seen.
@@ -192,7 +190,7 @@ Use selectors to avoid re-rendering chat surfaces on unrelated state changes.
 Keep portable logic in framework-light modules:
 
 - `crypto`: later swap Web Crypto with native crypto wrappers behind the same interface.
-- `services`: keep Firebase and wallet adapters thin.
+- `services`: keep API, messaging, and wallet adapters thin.
 - `store`: Zustand can be reused in React Native.
 - `components/ui`: later mirrored by native components, while page orchestration remains similar.
 
