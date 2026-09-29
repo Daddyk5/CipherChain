@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { AuthShell } from '../../components/ui/AuthShell.jsx'
 import { Button } from '../../components/ui/Button.jsx'
-import { useAuthStore } from '../../store/authStore.js'
 
 const personalFields = [
   { id: 'firstName', label: 'First name', autoComplete: 'given-name' },
@@ -20,7 +19,6 @@ const addressFields = [
 ]
 
 export function RegisterPage() {
-  const loginUser = useAuthStore((state) => state.loginUser)
 
   return (
     <AuthShell
@@ -68,7 +66,7 @@ export function RegisterPage() {
           <span>I confirm that my information is accurate and agree to secure wallet-based identity verification.</span>
         </label>
 
-        <Link to="/connect-wallet" onClick={() => loginUser({ email: 'new.operator@cipherchain.dev' })}>
+        <Link to="/login">
           <Button className="w-full">Continue to wallet binding</Button>
         </Link>
         <p className="text-center text-sm text-slate-500">Already registered? <Link className="text-blue-200" to="/login">Sign in</Link></p>

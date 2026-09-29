@@ -10,11 +10,11 @@
 
 `frontend/src/routes`: Route table and navigation guards.
 
-`frontend/src/hooks`: Shared React hooks for browser, Firebase, wallet, and chat behavior.
+`frontend/src/hooks`: Shared React hooks for browser, wallet, and chat behavior.
 
 `frontend/src/crypto`: Web Crypto logic. No React imports.
 
-`frontend/src/services`: Firebase, API, and blockchain adapters.
+`frontend/src/services`: API, secure messaging, and blockchain adapters.
 
 `frontend/src/store`: Zustand stores and selectors.
 
@@ -36,7 +36,7 @@
 
 `backend/src/models`: Data contracts and schema definitions.
 
-`backend/src/services`: Firebase Admin, blockchain relayers, notifications, indexing.
+`backend/src/services`: Blockchain relayers, notifications, indexing.
 
 `backend/src/sockets`: Presence, typing, and call-signaling events.
 

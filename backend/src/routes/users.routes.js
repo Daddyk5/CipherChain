@@ -1,8 +1,12 @@
 import { Router } from 'express'
-import { getProfile, updateProfile } from '../controllers/userController.js'
-import { requireFirebaseUser } from '../middleware/requireFirebaseUser.js'
+import { createUserController } from '../controllers/userController.js'
 
-export const usersRouter = Router()
+export function createUsersRouter({ db, requireUser }) {
+  const usersRouter = Router()
+  const controller = createUserController({ db })
 
-usersRouter.get('/:walletAddress', requireFirebaseUser, getProfile)
-usersRouter.patch('/:walletAddress', requireFirebaseUser, updateProfile)
+  usersRouter.get('/:walletAddress', requireUser, controller.getProfile)
+  usersRouter.patch('/:walletAddress', requireUser, controller.updateProfile)
+
+  return usersRouter
+}

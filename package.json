@@ -13,11 +13,15 @@
     "dev:frontend": "npm run dev --workspace frontend",
     "dev:backend": "npm run dev --workspace backend",
     "build": "npm run build --workspace frontend",
-    "lint": "npm run lint --workspace frontend",
+    "lint": "npm run lint --workspace frontend --workspace backend",
     "test:blockchain": "npm run test --workspace blockchain",
-    "compile:contracts": "npm run compile --workspace blockchain"
+    "compile:contracts": "npm run compile --workspace blockchain",
+    "test": "npm run test --workspaces --if-present",
+    "dev:demo": "npm run dev:demo --workspace backend",
+    "screenshots": "node frontend/scripts/screenshots.mjs"
   },
   "engines": {
     "node": ">=20.19.0"
-  }
+  },
+  "license": "GPL-3.0-only"
 }

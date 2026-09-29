@@ -1,13 +1,9 @@
-import http from 'node:http'
-import { createApp } from './app.js'
-import { attachSockets } from './sockets/index.js'
+import { createServer } from './createServer.js'
 import { env } from './config/env.js'
+import { createPool } from './db/pool.js'
 
-const app = createApp()
-const server = http.createServer(app)
+const db = createPool({ connectionString: env.DATABASE_URL, caCertPath: env.DATABASE_CA_CERT_PATH })
 
-attachSockets(server)
-
-server.listen(env.PORT, () => {
+createServer({ db }).listen(env.PORT, () => {
   console.log(`CipherChain API listening on port ${env.PORT}`)
 })
